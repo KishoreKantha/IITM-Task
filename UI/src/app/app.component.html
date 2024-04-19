@@ -1,0 +1,29 @@
+<!-- Top menu -->
+<p-menubar [model]="[]" styleClass="shadow-2">
+    <ng-template pTemplate="start">
+        <div class="flex align-items-center justify-content-start text-primary mr-2 ml-2 gap-3">
+            <i class="pi pi-users  text-4xl"></i>
+            <div class="font-semibold">Employee Portal</div>
+        </div>
+
+    </ng-template>
+    <ng-template pTemplate="end">
+        <div class="flex align-items-center justify-content-start text-primary mr-2 ml-2 gap-3">
+            <i title="Change theme" (click)="darkTheme=!darkTheme;theme.switchTheme(darkTheme?'dark':'light')"
+                [class]="darkTheme?'pi pi-sun':'pi pi-moon'"></i>
+            <button class="p-button p-button-sm mr-4" pButton [label]="router.url=='/home'?'Add Employee':'Go to Home'"
+                [routerLink]="router.url=='/home'?'/newUser':'/home'"></button>
+        </div>
+
+    </ng-template>
+</p-menubar>
+
+<!-- Message toast -->
+<p-toast></p-toast>
+
+<!-- Confirm message tags -->
+<p-confirmPopup></p-confirmPopup>
+<p-confirmDialog key="update"></p-confirmDialog>
+
+<!-- Main route -->
+<router-outlet></router-outlet>

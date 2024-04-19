@@ -1,0 +1,87 @@
+<p-table #userTable [value]="users" styleClass="p-2 " [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10, 25, 50]"
+    [scrollable]="true" scrollHeight="65vh" [loading]="loading"
+    [globalFilterFields]="['firstname','lastname','age','role','department','email','phone']" dataKey="_id"
+    editMode="row">
+    <ng-template pTemplate="caption">
+        <div class="flex">
+            <button pButton *ngIf="globalSearch||userTable.sortField" label="Clear"
+                class="p-button-outlined p-button-sm" icon="pi pi-filter-slash" (click)="clear(userTable)"
+                title="Clear sort & filter"></button>
+            <button pButton class="p-button-outlined p-button-sm ml-4" icon="pi pi-refresh "
+                (click)="refresh(userTable)" title="Refresh data"></button>
+            <span class="p-input-icon-left ml-auto">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" [(ngModel)]="globalSearch"
+                    (input)="userTable.filterGlobal(globalSearch, 'contains')" placeholder="Search keyword" />
+            </span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th></th>
+            <th>S.No</th>
+            <th [pSortableColumn]="col.field" *ngFor="let col of cols">
+                <div class="flex align-items-center justify-content-start ">
+                    {{col.header}}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </div>
+
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user let-editing="editing" let-index="rowIndex">
+        <tr [pEditableRow]="user">
+            <td>
+                <div class="flex align-items-center justify-content-center gap-2">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                        (click)="onRowEditInit(user)" class="p-button-rounded p-button-text"></button>
+                    <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
+                        (click)="deleteUser(user._id,$event)" class="p-button-rounded p-button-text"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                        (click)="onRowEditSave(user)"
+                        class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                        (click)="onRowEditCancel(user, index)"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+                </div>
+            </td>
+            <td>{{index+1}}</td>
+            <td *ngFor="let col of cols">
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <ng-container *ngIf="col.type=='string'">
+                            <input pInputText type="text" [(ngModel)]="user[col.field]">
+                        </ng-container>
+                        <ng-container *ngIf="col.type=='number'">
+                            <p-inputNumber [useGrouping]="false" [(ngModel)]="user[col.field]" [min]="0"
+                                [max]="9999999999"> </p-inputNumber>
+                        </ng-container>
+                        <ng-container *ngIf="col.type=='bool'">
+                            <p-inputSwitch title="Change user status" [(ngModel)]="user[col.field]"></p-inputSwitch>
+                        </ng-container>
+                        <ng-container *ngIf="col.type=='dropdown'">
+                            <p-dropdown [options]="col.field=='role'?api.roleOptions:api.depOptions"
+                                [(ngModel)]="user[col.field]" [showClear]="false" placeholder="Choose"></p-dropdown>
+                        </ng-container>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <ng-container *ngIf="col.field=='isactive';else others">
+                            <p-badge styleClass="shadow-2" [value]="user[col.field]?'Active':'Deactive'"
+                                [severity]="user[col.field]?'success':'danger'"></p-badge>
+                        </ng-container>
+                        <ng-template #others>
+                            {{ user[col.field] }}
+                        </ng-template>
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="7">No users found.</td>
+        </tr>
+    </ng-template>
+</p-table>
